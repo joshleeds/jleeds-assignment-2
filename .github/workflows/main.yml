@@ -1,0 +1,32 @@
+name: CI with Makefile
+
+on:
+  push:
+    branches: [ main ]  # Adjust if your main branch has a different name
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'  # Adjust to your Node.js version if needed
+
+      - name: Install dependencies via Makefile
+        run: make install
+
+      - name: Run the application and wait
+        run: |
+          make run &  # Run your application in the background
+          sleep 10    # Wait for the server to start
+
+      # You can run tests here if you have them set up in your Makefile
+      - name: Run tests
+        run: make test  # Adjust according to your Makefile commands
