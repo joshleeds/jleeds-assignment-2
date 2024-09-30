@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Scatter } from "react-chartjs-2";
 import { Chart as ChartJS, LinearScale, PointElement, Tooltip, Legend } from "chart.js";
+import { getRelativePosition } from 'chart.js/helpers';
 
 ChartJS.register(LinearScale, PointElement, Tooltip, Legend);
 
@@ -80,6 +81,7 @@ const App: React.FC = () => {
   const [clusteredData, setClusteredData] = useState([]); // Data grouped by clusters
   const [step, setStep] = useState(0); // Tracks the step of KMeans algorithm
   const [isConverged, setIsConverged] = useState(false);
+  const [manualPoints, setmanualPoints] = useState(0)
 
   
 
@@ -149,6 +151,7 @@ const App: React.FC = () => {
     setStep(0);
     setIsConverged(false);
     setClusters(3); 
+    setmanualPoints(0);
   };
 
   const chartData = {
@@ -180,6 +183,27 @@ const App: React.FC = () => {
         max: 10,
       },
     },
+    onClick: (e, chartElement, chart) => {
+      // Check if the initialization method is "Manual"
+      if (initializationMethod === "Manual" && manualPoints<clusters) {
+        const canvasPosition = getRelativePosition(e, chart);
+  
+        // Get data coordinates from pixel coordinates
+        const xValue = chart.scales.x.getValueForPixel(canvasPosition.x);
+        const yValue = chart.scales.y.getValueForPixel(canvasPosition.y);
+  
+        // Add new point to the chart
+        addPoint(xValue, yValue);
+        console.log(xValue, yValue);
+        setmanualPoints((prev) => prev + 1)
+      }
+    },
+  };
+  
+  const addPoint = (x, y) => {
+    const newPoint = { x, y };
+    // Update chartData by adding a new point
+    setCentroids([...centroids, newPoint]);
   };
 
   return (
