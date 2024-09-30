@@ -1,32 +1,38 @@
-name: CI with Makefile
+name: React App Workflow
 
+# Trigger workflow on push or pull request to the main branch
 on:
   push:
-    branches: [ main ]  # Adjust if your main branch has a different name
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    # Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'  # Adjust to your Node.js version if needed
+    # Set up Node.js (required for React apps)
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16' # Use the version of Node.js your project requires
 
-      - name: Install dependencies via Makefile
-        run: make install
+    # Install dependencies using make install
+    - name: Install Dependencies
+      run: make install
 
-      - name: Run the application and wait
-        run: |
-          make run &  # Run your application in the background
-          sleep 10    # Wait for the server to start
+    # Run the server with make run and sleep to ensure the server has time to start
+    - name: Start Server
+      run: |
+        make run &
+        sleep 10
 
-      # You can run tests here if you have them set up in your Makefile
-      - name: Run tests
-        run: make test  # Adjust according to your Makefile commands
+    # You can add additional steps for testing here
+    # For example, if you have tests to run:
+    # - name: Run Tests
+    #   run: npm test # This can vary based on your test setup
